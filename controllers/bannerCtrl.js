@@ -76,6 +76,7 @@ const createBanner=asyncHandler(async(req,res)=>{
             if(banner){
                 res.render('editBanner',{banner})
             }
+            
            
             
         } catch (error) {
@@ -161,4 +162,4 @@ module.exports={
     updateBanner,
     deleteBanner
 
-}
+} 

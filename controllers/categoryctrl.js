@@ -18,6 +18,8 @@ const addCategory=asyncHandler(async(req,res)=>{
         }else{
             const caseInsensitiveCategoryExist = await Category.findOne({
                 name: { $regex: new RegExp('^' + name + '$', 'i') }
+        
+
             });
     
             if (caseInsensitiveCategoryExist) {

@@ -29,7 +29,7 @@ const adminDashboard = asyncHandler(async (req, res) => {
         const categoryCount=category.length
       
         const totalRevenue = orders.reduce((total, order) => total + order.totalPrice, 0);
-console.log(totalRevenue,"this is total revanut");
+console.log(totalRevenue,"this is total revenue");
 
           //-------------------this is for the sales graph -----
           const monthlySales = await Order.aggregate([
@@ -155,7 +155,6 @@ const userField=asyncHandler(async(req,res)=>{
         console.log("user field error in dashboard",error);
     }
 })
-
 
 
 //block user

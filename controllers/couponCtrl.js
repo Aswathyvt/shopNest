@@ -39,7 +39,7 @@ const coupon=asyncHandler(async(req,res)=>{
         res.render('coupon',{coupon,currentproduct, totalpages,currentpage})
         
     } catch (error) {
-        console.log('Error happence in the coupon controller in the funtion coupon',error);
+        console.log('Error happens in the coupon controller in the funtion coupon',error);
         
     }
 });
@@ -170,50 +170,6 @@ const updateCoupon = asyncHandler(async (req, res) => {
         
     }
 });
-
-
-//validate coupon in user side----------------------------------------------------
-
-
-// const validateCoupon = asyncHandler(async (req, res) => {
-//   try {
-//     const name = req.body.couponCode;
-
-//     // Query the database to find the coupon by its name
-//     const coupon = await Coupon.findOne({ name: name });
-
-//     if (coupon) {
-//       const user = await User.findById(req.session.user)
-
-   
-//       const userId={
-//         userId:user._id
-//       }
-
-  
-
-//       coupon.user.push(userId)
-//       await coupon.save()
-//       // If a coupon with the provided name is found, send it as a JSON response
-//       res.status(200).json({
-//         isValid: true,
-//         coupon: coupon, // Include the coupon data in the response
-//       });
-//     } else {
-//       // If no coupon with the provided name is found, send an error response
-//       res.status(404).json({
-//         isValid: false,
-//         error: 'Coupon not found',
-//       });
-//     }
-//   } catch (error) {
-//     console.log('Error happened in the coupon controller in the function validateCoupon', error);
-//     res.status(500).json({
-//       isValid: false,
-//       error: 'An error occurred while processing your request',
-//     });
-//   }
-// });
 
 
 

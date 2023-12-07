@@ -194,7 +194,7 @@ const modifyCartQuantity=asyncHandler(async(req,res)=>{
                     }
                 );
                 const updatedUser = await user.save();
-                console.log("this is upsdated ",updatedUser);
+                console.log("this is updated ",updatedUser);
                    
                     const totalAmount = product.price * newQuantity;
                    

@@ -38,7 +38,7 @@ var orderSchema = new mongoose.Schema({
         type:String
     },
     address:{
-        type:Object,
+        type:Array,
         required:true
     }
     

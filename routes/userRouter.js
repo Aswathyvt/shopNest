@@ -38,6 +38,7 @@ const {addToList,Wishlist,deleteWishlistItem}=require('../controllers/wishlistCt
 const {addMoneyWallet,updateMongoWallet,sumWallet,sumWalletBuynow,walletPayment}=require('../controllers/walletCtrl')
 const {validateCoupon}=require('../controllers/couponCtrl');
 const {invoice,invoices}=require('../controllers/invoiceCtrl');
+const {aboutpage}=require('../controllers/aboutCtrl');
 const { isLogged} = require('../middleware/userAuth')
 
 
@@ -61,6 +62,11 @@ router.post('/login',verifyUser);
 router.get('/emailForgot',emailForgot)
 router.get('/logout',logout);
 router.post('/resendOTP',resendOtp);
+
+
+//about--------------------------------------------------------------------------------
+
+router.get('/about',aboutpage)
 
 
 

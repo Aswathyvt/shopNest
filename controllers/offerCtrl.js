@@ -102,22 +102,22 @@ const updateCategoryOffer = asyncHandler(async (req, res) => {
     try {
         const { id, offerPercentage } = req.body;
 
-        // Find the category
+        
         const category = await Category.findById(id);
-
-        // Find all products in the category
         const products = await Product.find({ category: category.name });
 
-        // Update prices based on the offer percentage
+        // Update prices based on the offer percentage, but only if product doesn't already have an offer
         products.forEach(async (product) => {
-            const newOfferPrice = (offerPercentage / 100) * product.price;
-            const newPrice = product.price - newOfferPrice;
+            if (!product.offerPrice) {
+                const newOfferPrice = (offerPercentage / 100) * product.price;
+                const newPrice = product.price - newOfferPrice;
 
-            // Update the product
-            await Product.findByIdAndUpdate(product._id, {
-                offerPrice: newOfferPrice,
-                price: newPrice,
-            });
+                // Update the product
+                await Product.findByIdAndUpdate(product._id, {
+                    offerPrice: newOfferPrice,
+                    price: newPrice,
+                });
+            }
         });
 
         console.log('Updated prices for products in category:', category.name);
@@ -130,8 +130,6 @@ const updateCategoryOffer = asyncHandler(async (req, res) => {
     }
 });
 //----------------------------------------------
-
-
 
 
 
