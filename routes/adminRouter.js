@@ -19,6 +19,10 @@ const {
     isAdminAuth
 }=require('../middleware/adminAuth')
 
+const productCrop =require('../middleware/imgCrop');
+const bannerCrop =require('../middleware/imgCrop');
+
+
 
 
 
@@ -38,9 +42,9 @@ router.get('/logout',logout);
 router.get('/product',isAdminAuth,allProducts);
 router.get('/product/:page',isAdminAuth, allProducts);
 router.get('/addProduct',isAdminAuth,addProduct);
-router.post('/createProduct',isAdminAuth,upload.array('images', 12),createProduct);
+router.post('/createProduct',isAdminAuth,upload.array('images', 12),productCrop.productCrop,createProduct);
 router.get('/editProduct',isAdminAuth,editProduct);
-router.post('/productEdited',isAdminAuth,upload.array('images', 12),productEdited);
+router.post('/productEdited',isAdminAuth,upload.array('images', 12),productCrop.productCrop,productEdited);
 router.get('/unlistProduct',isAdminAuth,unlistProduct);
 router.get('/listProduct',isAdminAuth,listProduct);
 router.get('/deleteProduct',isAdminAuth,deleteProduct);
@@ -85,9 +89,9 @@ router.get('/deleteCoupon',isAdminAuth,deleteCoupon);
 
 router.get('/banner',isAdminAuth,banner);isAdminAuth,
 router.get('/addNewBanner',isAdminAuth,addNewBanner);
-router.post('/createBanner',isAdminAuth,upload.single('image'),createBanner);
+router.post('/createBanner',isAdminAuth,upload.single('image'),bannerCrop.bannerCrop,createBanner);
 router.get('/editBanner',isAdminAuth,editBanner);
-router.post('/updateBanner',isAdminAuth,upload.single('image'),updateBanner);
+router.post('/updateBanner',isAdminAuth,upload.single('image'),bannerCrop.bannerCrop,updateBanner);
 router.get('/deleteBanner',isAdminAuth,deleteBanner);
 
 //---------offer------- ---------------------------------------------------------------------
