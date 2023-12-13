@@ -114,7 +114,7 @@
 
 
                             </table>
-                          
+<!--                           
                             <% if (coupon.length > 0) { %>
                                 <div class="col-lg-3">
                                     <button class="btn btn-sm" type="button" data-toggle="modal" data-target="#exampleModalCenter"  > Your Coupons</button>
@@ -126,9 +126,28 @@
                                       
                                    </div>
                                 <% } else { %>
-                                    <% } %>
+                                    <% } %> -->
                         </div>
-                        <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                        <div class="bt-1 border-color-1 mt-30 mb-30">
+                            <div class="row">
+                                <% for (let i = 0; i < coupon.length; i++) { %>
+                                    <div id="couponDiv<%= i %>" class="col-5 border border-primary m-3 coupon-div">
+                                        <tr>
+                                            <td><%= coupon[i].name %></td>
+                                            <td><%= coupon[i].discription %></td>
+                                            <td class="text-right">
+                                                <button class="btn btn-sm apply-button" onclick="couponApply('<%= coupon[i].offerPrice %>', <%= i %>)">Apply</button>
+                                                <button class="btn btn-sm" onclick="couponCancel('<%= coupon[i].offerPrice %>', <%= i %>)" style="display: none;" disabled>Cancel</button>
+                                            </td>
+                                        </tr>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        
+
+                     
+                        
                         <div class="payment_method">
                             <div class="mb-25">
                                 <h5>Payment</h5>
@@ -281,8 +300,6 @@
                                                 
                                                 
                                                 <div class="card-body">
-                                                   
-                                                      
                                                             <address>
                                                                 Name: <%= user.address[i].fullName %><br>
                                                                 Pin: <%= user.address[i].pinCode %> <%= user.address[i].townCity %><br> 
@@ -291,7 +308,7 @@
                                                                 Street: <%= user.address[i].areaStreet %><br>
                                                                 Phone: <%= user.address[i].mobile %>
                                                             </address>
-                                                            <p><%= user.address[i].region %></p>
+                                                              <p><%= user.address[i].region %></p>
                                                           
                                                            
                                                            
@@ -341,6 +358,12 @@
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+
     <script>
 
 
@@ -681,7 +704,62 @@ async function placeOrder(userId) {
 </script>
 
 
-
+<script>
+ 
+    function couponApply(price, index) {
+       const a = document.getElementById('totalValue');
+       const totalValue = a.textContent;
+       const numericValue = parseFloat(totalValue.replace('₹', ''));
+       a.textContent = '₹' + (numericValue - price);
+   
+       // Hide all other coupon divs
+       const couponDivs = document.querySelectorAll('.coupon-div');
+       couponDivs.forEach((div, i) => {
+           if (i !== index) {
+               div.style.display = 'none';
+           } else {
+               // Show the "Cancel" button within the clicked coupon div
+               const cancelButton = div.querySelector('.btn-sm:not(.apply-button)');
+               cancelButton.style.display = 'inline-block'; // or 'block' based on your styling
+               cancelButton.disabled = false;
+           }
+       });
+   
+       // Hide the Apply button within the clicked coupon div
+       const clickedCouponDiv = document.getElementById(`couponDiv${index}`);
+       const applyButton = clickedCouponDiv.querySelector('.apply-button');
+       applyButton.style.display = 'none';
+   }
+   
+   function couponCancel(price, index) {
+       const a = document.getElementById('totalValue');
+       const totalValue = a.textContent;
+       const numericValue = parseFloat(totalValue.replace('₹', ''));
+   
+       // Add the price for the "Cancel" button
+       a.textContent = '₹' + (Number(numericValue) + Number(price));
+   
+       // Show all coupon divs
+       const couponDivs = document.querySelectorAll('.coupon-div');
+       couponDivs.forEach(div => {
+           div.style.display = 'block';
+       });
+   
+       // Show the Apply button and hide the Cancel button within the clicked coupon div
+       const clickedCouponDiv = document.getElementById(`couponDiv${index}`);
+       const applyButton = clickedCouponDiv.querySelector('.apply-button');
+       const cancelButton = clickedCouponDiv.querySelector('.btn-sm:not(.apply-button)');
+       applyButton.style.display = 'inline-block'; // or 'block' based on your styling
+       cancelButton.style.display = 'none';
+       applyButton.disabled = true;
+       cancelButton.disabled = true;
+   }
+   
+   
+   
+                               
+                               
+                               </script>
 
 
 

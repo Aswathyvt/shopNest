@@ -17,10 +17,11 @@ const checkOut=asyncHandler(async(req,res)=>{
     try {
         const userId=req.session.user;
         const user=await User.findById(userId);
-        const coupon = await Coupon.find({
-          'user.userId': { $ne: user._id }
-      });
-      console.log('this is coupon ',coupon);
+      //   const coupon = await Coupon.find({
+      //     'user.userId': { $ne: user._id }
+      // });
+      const coupon = await Coupon.find()
+      console.log('this is coupon ',coupon);  
         const productId=user.cart.map(item=>item.ProductId);
         const product=await Product.find({_id:{$in:productId}});
   
@@ -841,21 +842,6 @@ const buynowPlaceOrder=asyncHandler(async(req,res)=>{
   }
   
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

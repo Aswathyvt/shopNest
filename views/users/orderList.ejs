@@ -92,7 +92,7 @@
                                             <td class="text-end">
                                                 <a href="/orderDetails?id=<%= orders[i].product[j]._id %>&orderId=<%= orders[i]._id %>" class="btn btn-md rounded font-sm">Detail</a>
                                                 <% if (orders[i].status=='pending') { %>
-                                                <a href="/cancelOrder?id=<%= orders[i].product[j]._id %>&orderId=<%= orders[i]._id %>"" class="btn btn-md rounded font-sm">Cancel</a>
+                                                <a href="/cancelOrder?id=<%= orders[i].product[j]._id %>&orderId=<%= orders[i]._id %>" class="btn btn-md rounded font-sm">Cancel</a>
                                                 <% } else if(orders[i].status=='conformed'){ %>
                                                     <a href="/cancelOrder?id=<%= orders[i].product[j]._id %>&orderId=<%= orders[i]._id %>"" class="btn btn-md rounded font-sm">Cancel</a>
                                                    
