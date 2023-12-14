@@ -31,19 +31,19 @@
                           
                             <a class="btn btn-primary" href="/invoice?id=<%= order._id%>">invoice</a>
                             <% if (order.status=='pending') { %>
-                                <a onclick="conformCancel('<%= order.products[0]._id %>','<%= order._id %>')" class="btn btn-md rounded font-sm">Cancel</a>
+                                <a onclick="conformCancel('<%= order.product[0]._id %>','<%= order._id %>')" class="btn btn-md rounded font-sm">Cancel</a>
                             <% } else if(order.status == 'conformed'){ %>
-                                <a onclick="conformCancel('<%= order.products[0]._id %>','<%= order._id %>')" class="btn btn-md rounded font-sm">Cancel</a>
+                                <a onclick="conformCancel('<%= order.product[0]._id %>','<%= order._id %>')" class="btn btn-md rounded font-sm">Cancel</a>
                                
 
                                 <% } else if(order.status == 'canceled'){ %>
                                     <% } else if(order.status == 'shipped'){ %>
-                                        <a onclick="conformCancel('<%= order.products[0]._id %>','<%= order._id %>')" class="btn btn-md rounded font-sm">Cancel</a>
+                                        <a onclick="conformCancel('<%= order.product[0]._id %>','<%= order._id %>')" class="btn btn-md rounded font-sm">Cancel</a>
                                         
 
 
 <% } else if(order.status == 'delivered'){ %>
-<a onclick="conformReturn('<%= order.products[0]._id %>','<%= order._id %>')" class="btn btn-md rounded font-sm">Return</a>
+<a onclick="conformReturn('<%= order.product[0]._id %>','<%= order._id %>')" class="btn btn-md rounded font-sm">Return</a>
 <% } else if(order.status=='returned'){ %>
 
 <% } %> 
