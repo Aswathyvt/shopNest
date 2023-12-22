@@ -592,129 +592,183 @@ const loadsalesReport=asyncHandler(async(req,res)=>{
 
 //-----sortinhg the sales report ----------------
 
+
 const salesReport = asyncHandler(async (req, res) => {
   try {
-      const date = req.query.date;
-      const format = req.query.format;
+      const date = req.query.date
+      const format = req.query.format
+      const paymentMethod = req.query.paymentMethod;
+      const orderStatus = req.query.orderStatus;
+
       let orders;
       const currentDate = new Date();
 
-      // Helper function to get the first day of the current month
-      function getFirstDayOfMonth(date) {
-          return new Date(date.getFullYear(), date.getMonth(), 1);
+      //Helper function to get the first day of the current month
+      function getFirstDayofMonth(date) {
+          return new Date(date.getFullYear(), date.getMonth(), 1)
       }
 
-      // Helper function to get the first day of the current year
+      //Helper function to get the first day of the current year
       function getFirstDayOfYear(date) {
-          return new Date(date.getFullYear(), 0, 1);
+          return new Date(date.getFullYear(), 0, 1)
       }
 
       switch (date) {
-          case 'today':
+          case "today":
               orders = await Order.find({
-                  status: 'delivered',
+                  status: orderStatus || "delivered",
+                  paymentMethod: paymentMethod || undefined,// Use undefined if the parameter is not provided
                   createdOn: {
-                      $gte: new Date().setHours(0, 0, 0, 0), // Start of today
-                      $lt: new Date().setHours(23, 59, 59, 999), // End of today
+                      $gte: new Date().setHours(0, 0, 0, 0),//start of today
+                      $lt: new Date().setHours(23, 59, 59, 999)//end of the day
                   },
-              });
-              break;
-           case 'week':
-              const startOfWeek = new Date(currentDate);
-              startOfWeek.setDate(currentDate.getDate() - currentDate.getDay()); // Set to the first day of the week (Sunday)
-              startOfWeek.setHours(0, 0, 0, 0);
+              })
+              break
+          case "week":
+              const startOfWeek = new Date(currentDate)
+              startOfWeek.setDate(currentDate.getDate() - currentDate.getDay())//set the first day of the week(sunday)
+              startOfWeek.setHours(0, 0, 0, 0)
 
-              const endOfWeek = new Date(startOfWeek);
-              endOfWeek.setDate(startOfWeek.getDate() + 6); // Set to the last day of the week (Saturday)
-              endOfWeek.setHours(23, 59, 59, 999);
+              const endOfWeek = new Date(startOfWeek)
+              endOfWeek.setDate(startOfWeek.getDate() + 6)//Set to the last of the week (Saturday)
+              endOfWeek.setHours(23, 59, 59, 999)
 
               orders = await Order.find({
-                  status: 'delivered',
+                  status: orderStatus || 'delivered',
+                  paymentMethod: paymentMethod || undefined,
+
                   createdOn: {
                       $gte: startOfWeek,
                       $lt: endOfWeek,
                   },
-              });
-              break;
-          case 'month':
-              const startOfMonth = getFirstDayOfMonth(currentDate);
-              const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
+              })
+              break
+          case "month":
+              const startOfMonth = getFirstDayofMonth(currentDate)
+              const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999)
 
               orders = await Order.find({
-                  status: 'delivered',
+                  status: orderStatus || 'delivered',
+                  paymentMethod: paymentMethod || undefined,
                   createdOn: {
                       $gte: startOfMonth,
                       $lt: endOfMonth,
                   },
-              });
-              break;
+              })
+              break
           case 'year':
               const startOfYear = getFirstDayOfYear(currentDate);
               const endOfYear = new Date(currentDate.getFullYear(), 11, 31, 23, 59, 59, 999);
 
               orders = await Order.find({
-                  status: 'delivered',
+                  status: orderStatus || 'delivered',
+                  paymentMethod: paymentMethod || undefined,
                   createdOn: {
                       $gte: startOfYear,
                       $lt: endOfYear,
                   },
               });
-             
+
               break;
+          case "custom": // Custom date range, update the condition accordingly
+              const startDate = new Date(req.query.startDate);
+              const endDate = new Date(req.query.endDate);
+              orders = await Order.find({
+                  status: orderStatus || "delivered",
+                  paymentMethod: paymentMethod || undefined,
+                  createdOn: {
+                      $gte: startDate,
+                      $lt: endDate,
+                  },
+              });
           default:
-              // Fetch all orders
-              orders = await Order.find({ status: 'delivered' });
+              //Fetch all orders
+              orders = await Order.find({
+                  status: orderStatus || "delivered",
+                  paymentMethod: paymentMethod || undefined,
+              })
+              break;
+
       }
       if (format === 'excel') {
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Sales Report');
+          const workbook = new ExcelJS.Workbook()
+          const worksheet = workbook.addWorksheet('Sales Report')
 
-        worksheet.columns = [
-          { header: 'Order ID', key: 'id', width: 30 },
-          { header: 'Product name', key: 'name', width: 30 },
-          { header: 'Price', key: 'price', width: 15 },
-          { header: 'Status', key: 'status', width: 20 },
-          { header: 'Date', key: 'date', width: 15 }
-         
-      ];
-      orders.forEach(order => {
-        order.product.forEach(product => {
-            worksheet.addRow({
-                id: order._id,
-                name: product.title,
-                price: order.totalPrice,
-                status: order.status,
-                date: order.createdOn.toLocaleDateString()
-                // ... (Fill other columns as necessary)
-            });
-        });
-    });
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=sales-report.xlsx');
-    await workbook.xlsx.write(res);
-    return res.end();
-  }else{
+          worksheet.columns = [
+              { header: "Order ID", key: 'id', width: 30 },
+              { header: "Product name", key: 'name', width: 30 },
+              { header: "Price", key: 'price', width: 15 },
+              { header: 'Status', key: 'status', width: 20 },
+              { header: 'Date', key: 'date', width: 15 }
+          ]
+          orders.forEach(order => {
+              order.product.forEach(product => {
+                  worksheet.addRow({
+                      id: order._id,
+                      name: product.title,
+                      price: order.totalPrice,
+                      status: order.status,
+                      date: order.createdOn.toLocaleDateString()
+                  })
+              })
+          })
+          res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+          res.setHeader('Content-Disposition', 'attachment; filename=sales-report.xlsx')
+          await workbook.xlsx.write(res)
+          return res.end()
+      } else if (format === 'pdf') {
+          // PDF generation
+          const doc = new PDFDocument();
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
 
-    const itemsperpage = 3;
-      const currentpage = parseInt(req.query.page) || 1;
-      const startindex = (currentpage - 1) * itemsperpage;
-      const endindex = startindex + itemsperpage;
-      const totalpages = Math.ceil(orders.length / 3);
-      const currentproduct = orders.slice(startindex,endindex);
+          doc.pipe(res);
 
- res.render('salesReport',{orders:currentproduct,totalpages,currentpage})
-    
-
-  }
+          // Add PDF content
+          const xCoordinates = [50, 150, 300, 400, 500];
+          doc.font('Helvetica-Bold').text('Sales Report', { align: 'center', fontSize: 25, margin: 10 });
+          doc.moveDown();
 
 
-      
+
+          const y = doc.y;
+          doc.lineWidth(0.5).moveTo(0, y).lineTo(500, y).stroke();
+
+          doc.font('Helvetica-Bold').text('Order ID', xCoordinates[0], y);
+          doc.text('Product name', xCoordinates[1], y);
+          doc.text('Price', xCoordinates[2], y);
+          doc.text('Status', xCoordinates[3], y);
+          doc.text('Date', xCoordinates[4], y);
+
+          orders.forEach(order => {
+              order.product.forEach(product => {
+                  doc.moveDown();
+                  doc.lineWidth(0.5).moveTo(0, doc.y).lineTo(500, doc.y).stroke();
+                  doc.text(order._id, xCoordinates[0], doc.y, { width: xCoordinates[1] - xCoordinates[0] });
+                  doc.text(product.title, xCoordinates[1], doc.y, { width: xCoordinates[2] - xCoordinates[1] });
+                  doc.text(order.totalPrice.toString(), xCoordinates[2], doc.y, { width: xCoordinates[3] - xCoordinates[2] });
+                  doc.text(order.status, xCoordinates[3], doc.y, { width: xCoordinates[4] - xCoordinates[3] });
+                  doc.text(order.createdOn.toLocaleDateString(), xCoordinates[4], doc.y);
+              });
+          });
+
+          doc.end();
+      } else {
+          const itemsperpage = 3
+          const currentpage = parseInt(req.query.page) || 1
+          const startindex = (currentpage - 1) * itemsperpage
+          const endindex = startindex + itemsperpage
+          const totalpages = Math.ceil(orders.length / 3)
+          const currentproduct = orders.slice(startindex, endindex)
+
+          res.render('salesReport', { orders, currentproduct, totalpages, currentpage, date, format, paymentMethod, orderStatus })
+
+      }
   } catch (error) {
-      console.log('Error occurred in salesReport route:', error);
-      // Handle errors and send an appropriate response
-      res.status(500).json({ error: 'An error occurred' });
+      console.log("Error happens in the order ctrl SalesReport", error);
+      res.status(500).send('An error occurred');
   }
-});
+})
 
 
 const buyNOw=asyncHandler(async(req,res)=>{

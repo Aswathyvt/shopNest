@@ -191,7 +191,7 @@ const aProductPage = asyncHandler(async (req, res) => {
 const shopProduct = asyncHandler(async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 6; 
+    const limit = parseInt(req.query.limit) || 16; 
 
     // Calculate the skip value to determine 
     const skip = (page - 1) * limit;
@@ -203,13 +203,28 @@ const shopProduct = asyncHandler(async (req, res) => {
         const userId = req.session.user;
         const user=await User.findById(userId);
 
+        const cat = await Category.find(); // Using MongoDB as an example
+       
+
+
     // Get the total number of products in the database
     const totalProductsCount = await Product.countDocuments();
 
     // Calculate the total number of pages based on the total products and limit
     const totalPages = Math.ceil(totalProductsCount / limit);
 
-    res.render('shop', { product, page, totalPages ,limit,user });
+
+    const itemsperpage = 8;
+    const currentpage = parseInt(req.query.page) || 1;
+    const startindex = (currentpage - 1) * itemsperpage;
+    const endindex = startindex + itemsperpage;
+    const totalpages = Math.ceil(product.length / 8);
+    const currentproduct = product.slice(startindex,endindex);
+
+
+
+
+    res.render('shop', { product, page, totalpages, currentproduct,limit,user,cat ,currentpage});
     } catch (error) {
         console.log('Error occured in shopProduct function', error);
     }
