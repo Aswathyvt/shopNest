@@ -5,7 +5,7 @@ const nodemailer=require("nodemailer");
 const Category = require("../model/categoryModel");
 const Order=require("../model/orderModel");
 const Banner=require('../model/bannerModel')
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 
 const generateHashedPassword = async (password) => {
