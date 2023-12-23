@@ -44,7 +44,7 @@ router.get('/product/:page',isAdminAuth, allProducts);
 router.get('/addProduct',isAdminAuth,addProduct);
 router.post('/createProduct',isAdminAuth,upload.array('images', 12),productCrop.productCrop,createProduct);
 router.get('/editProduct',isAdminAuth,editProduct);
-router.post('/productEdited',isAdminAuth,upload.array('images', 12),productCrop.productCrop,productEdited);
+router.post('/productEdited',isAdminAuth,upload.array('images', 12),productEdited);
 router.get('/unlistProduct',isAdminAuth,unlistProduct);
 router.get('/listProduct',isAdminAuth,listProduct);
 router.get('/deleteProduct',isAdminAuth,deleteProduct);

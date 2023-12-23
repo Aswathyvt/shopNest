@@ -10,126 +10,76 @@ const Category=require('../model/categoryModel')
 //load admin dashboard---------------------------------------------------------------
 
 
-const adminDashboard = asyncHandler(async (req,res) => {
+const adminDashboard = asyncHandler(async (req, res) => {
     try {
-     const products=await Product.find()
-     // const orders=await Order.find({status:'delivered'})
-     const category=await Category.find()
-     const users=await User.find()
- 
-     
-     const { filter } = req.query;
- 
-     let startDate, endDate;
-     const currentDate = new Date();
- 
-     switch (filter) {
-         case 'today':
-             startDate = new Date(currentDate);
-             startDate.setHours(0, 0, 0, 0);
-             endDate = new Date(currentDate);
-             endDate.setHours(23, 59, 59, 999);
-             break;
-         case 'week':
-             startDate = new Date(currentDate);
-             startDate.setDate(currentDate.getDate() - currentDate.getDay()); // set to the first day of the week (Sunday)
-             startDate.setHours(0, 0, 0, 0);
-             endDate = new Date(startDate);
-             endDate.setDate(startDate.getDate() + 6); // set to the last day of the week (Saturday)
-             endDate.setHours(23, 59, 59, 999);
-             break;
-         case 'month':
-             startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-             endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
-             break;
-         case 'year':
-             startDate = new Date(currentDate.getFullYear(), 0, 1);
-             endDate = new Date(currentDate.getFullYear(), 11, 31, 23, 59, 59, 999);
-             break;
-             case 'custom':
-                 startDate = req.query.startDate ? new Date(req.query.startDate) : null;
-                 endDate = req.query.endDate ? new Date(req.query.endDate) : null;
- 
-                 // Adjust the end date to the end of the selected day
-                 if (endDate) {
-                     endDate.setHours(23, 59, 59, 999);
-                 }
-                 break;
-             default:
-                 // Default to all data
-                 startDate = null;
-                 endDate = null;
-                 break;
-     }
- 
-     const orders = await Order.find({
-         status: 'delivered',
-         createdOn: {
-             $gte: startDate,
-             $lt: endDate,
-         },
-     });
-     
-     
-     const latestOrders=await Order.find().sort({createdOn:-1}).limit(5)
-     
- 
- 
-     const productCount=products.length
-     const orderCount=orders.length
-     const categoryCount=category.length
- 
-     const totalRevenue=orders.reduce((total,order)=>total+order.totalPrice,0)
-     console.log("This is total Revenue",totalRevenue);
- 
-     //THIS IS FOR THE SALES GRAPH
- 
-     const monthlySales=await Order.aggregate([
-         {
-             $match:{
-                 status:'delivered',//Filter by status
-             },
-         },
-         {
-             $group:{
-                 _id:{
-                     $month:'$createdOn',
-                 },
-                 count:{$sum:1},
-             },
-         },
-         {
-             $sort:{
-                 '_id':1,
-             },
-         },
-     ])
-     const monthlySalesArray=Array.from({length:12},(_,index)=>{
-         const monthData=monthlySales.find((item)=>item._id===index+1)
-         return monthData?monthData.count:0
-     })
- 
-     //THIS IS FOR THE SALES GRAPH -END-
- 
-     //THIS IS FOR THE PRODUCT DATA
-     const productsPerMonth=Array(12).fill(0)
-     // ITERATE THROUGH EACH PRODUCT
-     products.forEach(product=>{
-         //EXTRACT MONTH FROM THE CREATED TIMESTAMP
-         const creationMonth=product.createdAt.getMonth()
-         //INCREMENT THE COUNT FOR THE CORRESPONDING MONTH
-         productsPerMonth[creationMonth]++
-     })
-     //THIS IS FOR THEP PRODUCT DATA END
-     res.render('dashboard',{totalRevenue,orderCount,productCount,categoryCount,monthlySalesArray,productsPerMonth,latestOrders,deliveredOrders:orders})
-     
+        const products = await Product.find();
+        const orders = await Order.find({status:"delivered"});
+        const category=await Category.find()
+        const users= await User.find()
+
+
+
+        const latestOrders = await Order.find().sort({ createdOn: -1 }).limit(5);
+       
+
+
+
+
+        const productCount = products.length;
+        const orderCount = orders.length;
+        const categoryCount=category.length
+      
+        const totalRevenue = orders.reduce((total, order) => total + order.totalPrice, 0);
+console.log(totalRevenue,"this is total revenue");
+
+          //-------------------this is for the sales graph -----
+          const monthlySales = await Order.aggregate([
+            {
+                $match: {
+                    status: "delivered", // Filter by status
+                },
+            },
+            {
+                $group: {
+                    _id: {
+                        $month: '$createdOn',
+                    },
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $sort: {
+                    '_id': 1,
+                },
+            },
+        ]);
+        const monthlySalesArray = Array.from({ length: 12 }, (_, index) => {
+            const monthData = monthlySales.find((item) => item._id === index + 1);
+            return monthData ? monthData.count : 0;
+        });
+
+        //-------------------this is for the sales graph -end ----
+
+        ///----------this is for the product data------
+        const productsPerMonth = Array(12).fill(0);
+
+        // Iterate through each product
+        products.forEach(product => {
+          // Extract month from the createdAt timestamp
+          const creationMonth = product.createdAt.getMonth(); // JavaScript months are 0-indexed
+    
+          // Increment the count for the corresponding month
+          productsPerMonth[creationMonth]++;
+        });
+        ///----------this is for the product data--end----
+        
+        res.render('dashboard',{totalRevenue, orderCount, productCount,categoryCount ,monthlySalesArray,productsPerMonth,latestOrders});
+
     } catch (error) {
-     console.log('Error happens in the admin Ctrl admindashboard function',error);
- 
-     res.status(500).send('Internal server error')
-     
+        console.log('Error happened in admin controller at adminLoginPage function ', error);
     }
- })
+});
+
 
 
 
